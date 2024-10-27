@@ -32,12 +32,12 @@ type SectionProps = PropsWithChildren<{
 function Section({children, title}: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
-    <View style={styles.sectionContainer}>
+    <View style={styles.sectionContainer}> 
       <Text
         style={[
           styles.sectionTitle,
           {
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: 'brown', //untuk  mengubah style warna
           },
         ]}>
         {title}
@@ -76,18 +76,16 @@ function App(): React.JSX.Element {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
+          <Section title="Nama">
+            Asmarina Nurjanah
           </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
+          <Section title="NIM">
+            22/494711/SV/20896
           </Section>
-          <Section title="Debug">
-            <DebugInstructions />
+          <Section title="Kelas">
+            PGPBL-A
           </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
+          <Section title="Link Media Sosial">
           </Section>
           <LearnMoreLinks />
         </View>
