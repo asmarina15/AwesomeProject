@@ -8,16 +8,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faUser, faUserGraduate } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { WebView } from 'react-native-webview';
+import Createdata from './Createdata';
+import DataMahasiswa from './Listdata';
 
 function HomeScreen() {
     return (
-        <Profil />
+        < Createdata />
     );
 }
 
 function DataMahasiswaScreen() {
     return (
-        < Mahasiswa />
+        < DataMahasiswa />
     );
 }
 
