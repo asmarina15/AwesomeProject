@@ -1,113 +1,108 @@
-import React, { useState } from 'react'
-import { SafeAreaView, View, ScrollView, TextInput, Button, StyleSheet, Text } from 'react-native';
-import { ScrollView } from 'react-native-virtualized-view'
+import React, { useState, useEffect } from 'react'
+import { SafeAreaView, View, TextInput, Button, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
+import { ScrollView } from 'react-native-virtualized-view';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faPenToSquare, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 
-// const Createdata = () => {
-//     const jsonUrl = 'http://10.0.2.2:3000/mahasiswa';
-//     const [first_name, setFirstName] = useState('');
-//     const [last_name, setLastName] = useState('');
-//     const [kelas, setKelas] = useState('');
-//     const [gender, setGender] = useState('');
-//     const [email, setEmail] = useState('');
+const Createdata = () => {
+    const jsonUrl = 'http://10.0.2.2:3000/mahasiswa';
+    const [first_name, setFirstName] = useState('');
+    const [last_name, setLastName] = useState('');
+    const [kelas, setKelas] = useState('');
+    const [gender, setGender] = useState('');
+    const [email, setEmail] = useState('');
+    const [selectedUser, setSelectedUser] = useState({});
+    const [isLoading, setLoading] = useState(true);
+    const [dataUser, setDataUser] = useState([]);
+    const [refresh, setRefresh] = useState(false);
 
-//     const submit = () => {
-//         const data = {
-//             first_name: first_name,
-//             last_name: last_name,
-//             email: email,
-//             kelas: kelas,
-//             gender: gender,
-//         };
-//         fetch('http://10.0.2.2:3000/mahasiswa', {
-//             method: 'POST',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify(data)
-//         })
-//             .then((response) => response.json())
-//             .then((json) => {
-//                 console.log(json);
-//                 alert('Data tersimpan');
-//                 setFirstName('');
-//                 setLastName('');
-//                 setEmail('');
-//                 setKelas('');
-//                 setGender('');
-//             })
-//     }
+    const fetchData = () => {
+        setLoading(true);
+        fetch(jsonUrl)
+            .then((response) => response.json())
+            .then((json) => {
+                setDataUser(json);
+            })
+            .catch((error) => console.error(error))
+            .finally(() => setLoading(false));
+    };
 
-const [selectedUser, setSelectedUser] = useState({});
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const refreshPage = () => {
+        setRefresh(true);
+        fetchData();
+        setRefresh(false);
+    };
+
+    const submit = () => {
+        const data = {
+            first_name: first_name,
+            last_name: last_name,
+            email: email,
+            kelas: kelas,
+            gender: gender,
+        };
+        fetch(`http://10.0.2.2:3000/mahasiswa/${selectedUser.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          })
+            .then((response) => response.json())
+            .then((json) => {
+              console.log(json);
+              alert('Data tersimpan');
+              setFirstName('');
+              setLastName('');
+              setKelas('');
+              setGender('');
+              setEmail('');
+              refreshPage();
+              FlatList.refresh();
+            })
+        }
+       
+    
 
  const selectItem = (item) => {
    setSelectedUser(item);
-   setName(item.name);
-   setNim(item.nim);
+   setFirstName(item.first_name);
+   setLastName(item.last_name);
    setKelas(item.kelas);
-   setJeniskelamin(item.jeniskelamin);
-   setColor(item.color);
-   setIcon(item.icon);
+   setGender(item.gender);
+   setEmail(item.email);
  }
 
- const submit = () => {
-  const data = {
-    name: name,
-    nim: nim,
-    kelas: kelas,
-    jeniskelamin: jeniskelamin,
-    color: color,
-    icon: icon,
-  };
-
-  fetch(`http://10.0.2.2:3000/mahasiswa/${selectedUser.id}`, {
-    method: 'PATCH',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
-    .then((response) => response.json())
-    .then((json) => {
-      console.log(json);
-      alert('Data tersimpan');
-      setName('');
-      setNim('');
-      setKelas('');
-      setJeniskelamin('');
-      setColor('');
-      setIcon('');
-      refreshPage();
-      FlatList.refresh();
-    })
-}
-
-
     return (
-      <SafeAreaView>
-      <View>
-        {isLoading ? (
-          <View style={{ alignItems: 'center', marginTop: 20 }}>
-            <Text style={styles.cardtitle}>Loading...</Text>
-          </View>
-        ) : (
-          <View>
-            <ScrollView>
-            <View>
-              <Text style={styles.title}>Edit Data Mahasiswa</Text>
-              <View style={styles.form}>
-                <TextInput placeholder="Nama" value={name} onChangeText={(value) => setName(value)} />
-                <TextInput placeholder="NIM" value={nim} onChangeText={(value) => setNim(value)} />
-                <TextInput placeholder="Kelas" value={kelas} onChangeText={(value) => setKelas(value)} />
-                <TextInput placeholder="Jenis Kelamin" value={jeniskelamin} onChangeText={(value) => setJeniskelamin(value)} />
-                <TextInput placeholder="Warna (HEX)" value={color} onChangeText={(value) => setColor(value)} />
-                <TextInput placeholder="Icon (Fontawesome 5)" value={icon} onChangeText={(value) => setIcon(value)} />
-                <Button title="Edit" style={styles.button} onPress={submit} />
-              </View>
+        <SafeAreaView>
+        <View>
+        
+          {isLoading ? (
+            <View style={{ alignItems: 'center', marginTop: 20 }}>
+              <Text style={styles.cardtitle}>Loading...</Text>
             </View>
-            <View style={styles.devider}></View>
-            <FlatList
+          ) : (
+            <View>
+            <ScrollView>
+              <View>
+                <Text style={styles.title}>Edit Data Mahasiswa</Text>
+                <View style={styles.form}>
+                  <TextInput style={styles.input} placeholder="Nama Depan" value={first_name} onChangeText={(value) => setFirstName(value)} />
+                  <TextInput style={styles.input} placeholder="Nama Belakang" value={last_name} onChangeText={(value) => setLastName(value)} />
+                  <TextInput style={styles.input} placeholder="Kelas" value={kelas} onChangeText={(value) => setKelas(value)} />
+                  <TextInput style={styles.input} placeholder="Jenis Kelamin" value={gender} onChangeText={(value) => setGender(value)} />
+                  <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={(value) => setEmail(value)} />
+                  <Button title="Edit" style={styles.button} onPress={submit} />
+                </View>
+              </View>
+              <View style={styles.devider}></View>
+              
+              <FlatList
              style={{ marginBottom: 10 }}
              data={dataUser}
              onRefresh={() => { refreshPage() }}
@@ -118,16 +113,15 @@ const [selectedUser, setSelectedUser] = useState({});
                  <TouchableOpacity onPress={() => selectItem(item)}>
                    <View style={styles.card}>
                      <View style={styles.avatar}>
-                       <FontAwesome5 name={item.icon} size={50} color={item.color} />
+                       <FontAwesomeIcon icon={faGraduationCap} size={50} />
                      </View>
                      <View>
-                       <Text style={styles.cardtitle}>{item.name}</Text>
-                       <Text>{item.nim}</Text>
+                       <Text style={styles.cardtitle}>{item.first_name} {item.first_name}</Text>
                        <Text>{item.kelas}</Text>
-                       <Text>{item.jeniskelamin}</Text>
+                       <Text>{item.gender}</Text>
                      </View>
                      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end' }}>
-                       <FontAwesome5 name={'edit'} size={20} />
+                       <FontAwesomeIcon icon={faPenToSquare} size={20} />
                      </View>
                    </View>
                  </TouchableOpacity>
@@ -139,7 +133,10 @@ const [selectedUser, setSelectedUser] = useState({});
        )}
      </View>
    </SafeAreaView>
+
+   
     )
+}
 
 export default Createdata
 
@@ -154,7 +151,7 @@ const styles = StyleSheet.create({
     },
     form: {
         padding: 10,
-        marginBottom: 100,
+        marginBottom: 10,
     },
     input: {
         borderWidth: 1,
@@ -166,5 +163,22 @@ const styles = StyleSheet.create({
     },
     button: {
         marginVertical: 10,
-    }
+    },
+    card: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 15,
+        marginVertical: 5,
+        marginHorizontal: 10,
+        backgroundColor: '#f9f9f9',
+        borderRadius: 8,
+        elevation: 2,
+    },
+    avatar: {
+        marginRight: 15,
+    },
+    cardtitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
 })
